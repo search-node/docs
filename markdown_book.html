@@ -1,0 +1,292 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+</head>
+<body>
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a><ul>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#conventions">Conventions</a></li>
+<li><a href="#notes">Notes</a></li>
+</ul></li>
+<li><a href="#search-node">Search node</a><ul>
+<li><a href="#installation">Installation</a><ul>
+<li><a href="#clone">Clone</a></li>
+<li><a href="#node-packages">Node packages</a></li>
+<li><a href="#configuration">Configuration</a></li>
+<li><a href="#ui">UI</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#elasticsearch">Elasticsearch</a></li>
+<li><a href="#javascript-frontend">JavaScript frontend</a></li>
+<li><a href="#drupal-modules">Drupal modules</a><ul>
+<li><a href="#panels-vs.-blocks">Panels vs. blocks</a></li>
+<li><a href="#configuration-1">Configuration</a></li>
+<li><a href="#override-search-controller">Override search controller</a></li>
+</ul></li>
+</ul>
+</div>
+<!-- Ensures that TOC is on it's own page -->
+
+<h1 id="introduction">Introduction</h1>
+<p><span class="citation">@TODO</span>: Write this section.</p>
+<h2 id="requirements">Requirements</h2>
+<p>The guide assumes that you have an installed linux based server with the following packages installed and at least the versions given.</p>
+<ul>
+<li>nginx 1.4.x</li>
+<li>nodeJS 4.0.x</li>
+<li>supervisor 3.x</li>
+<li>git</li>
+<li>Valid SSL certificates for you domain.</li>
+</ul>
+<h2 id="conventions">Conventions</h2>
+<p>This document uses <strong>[]</strong> square brackets around the different variables in the configuration templates that needs to be exchanged with the actual values from other parts of the configuration (e.g. API keys).</p>
+<p>Her is an explanation of the different key configuration variables.</p>
+<ul>
+<li>[server name]</li>
+<li>[client name]</li>
+<li>[SSL CERT]</li>
+<li>[SSL KEY]</li>
+<li>[CHANGE ME]</li>
+<li>[PASSWORD]</li>
+<li>[SEARCH API KEY]</li>
+<li>[SEARCH INDEX KEY]</li>
+<li><span class="citation">@TODO</span> Document placeholders [...]</li>
+</ul>
+<pre>
+Things in boxes are commands that should be executed or configuration thats need in the files given.
+</pre>
+<h2 id="notes">Notes</h2>
+<p>To install the newest version (development version that's not aways stable), you should checkout the development branches in the all the cloned repositories instead of the latest version tag.</p>
+<p>The document assumes that you are logged in as the user <em>deploy</em>, if this is not the case, you need to change things (e.g. the supervisor run script etc.).</p>
+<p>It also assumes that you are installing in <em>/home/www</em>, which is not the default location on most systems.</p>
+<h1 id="search-node">Search node</h1>
+<p>This part of the guide explains how to get the search node <a href="https://nodejs.org/">nodeJS</a> application installed and started. The search node application is a general purpose application to provide a fast search engine through web-socket connections (using elasticsearch). It was developed during the project <a href="https://github.com/aroskanalen/docs/blob/master/Installation%20guide.md">Aroskanalen</a> but with reusability in mind for other projects.</p>
+<h2 id="installation">Installation</h2>
+<p>The installation process requires you clone the application, download node modules and define JSON configuration files.</p>
+<h3 id="clone">Clone</h3>
+<p>Start by cloning the git repository for search node and checkout the latest release tag (which can be found using <em>git tag</em>).</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> /home/www
+<span class="kw">git</span> clone git@github.com:search-node/search_node.git
+<span class="kw">cd</span> search_node
+<span class="kw">git</span> checkout [v1.x.x]</code></pre></div>
+<h3 id="node-packages">Node packages</h3>
+<p>Search node uses a plugin architecture that requires installation of libraries from the node package manager (npm). The application comes with an installation script to handle this, simply go to the root of the application and execute the script.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> /home/www/search_node/
+<span class="kw">./install.sh</span></code></pre></div>
+<p><strong>Note</strong>: There are also <em>upgrade</em> and <em>update</em> scripts, where <em>update</em> is used when updating from on version of search node to another to ensure that the right node module versions are used.</p>
+<h3 id="configuration">Configuration</h3>
+<p>We need to configure nginx to sit in front of the search node so it is accessible through normal web-ports and also proxy web-socket connections from the frontend client (<a href="https://angularjs.org/">AngularJS</a>). So we add the upstream connection configuration in a nodejs configuration file for nginx.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> nano -w /etc/nginx/sites-available/nodejs</code></pre></div>
+<p>Append this upstream connection definition to the file.</p>
+<div class="sourceCode"><pre class="sourceCode apache"><code class="sourceCode apache">upstream nodejs_search {
+  server 127.0.0.1:3010;
+}</code></pre></div>
+<p>To access the search node UI and allow communication with the search node a virtual host configuration is needed. You need to change the <em>[server name]</em> with the actual name of the server.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> nano -w /etc/nginx/sites-available/search_[server name]</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode apache"><code class="sourceCode apache">server {
+  listen<span class="st"> 80;</span>
+
+  server_name search-[server name];
+  rewrite ^ https://$server_name$request_uri? permanent;
+
+  access_log /var/log/nginx/search_access.log;
+  error_log /var/log/nginx/search_error.log;
+}
+
+<span class="co"># HTTPS server</span>
+<span class="co">#</span>
+server {
+  listen<span class="st"> 443;</span>
+
+  server_name search-[server name];
+
+  access_log /var/log/nginx/search_access.log;
+  error_log /var/log/nginx/search_error.log;
+
+  location / {
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+
+    proxy_buffering off;
+
+    proxy_pass http://nodejs_search/;
+    proxy_redirect off;
+  }
+
+  location /socket.io/ {
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection &quot;upgrade&quot;;
+
+    proxy_pass http://nodejs_search;
+  }
+
+  ssl on;
+  ssl_certificate /etc/nginx/ssl/[SSL CERT].crt;
+  ssl_certificate_key /etc/nginx/ssl/[SSL KEY].key;
+
+  ssl_session_timeout 5m;
+  ssl_session_cache shared:SSL:10m;
+
+  <span class="co"># https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/</span>
+  ssl_prefer_server_ciphers On;
+  ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+  ssl_ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS;
+}</code></pre></div>
+<p>Enable the configuration by adding a symbolic links for the search node. The nodejs configuration file should be linked during configuration of the middleware. Restart nginx to enable the configuration.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> /etc/nginx/sites-enabled/
+<span class="kw">sudo</span> ln -s /etc/nginx/sites-available/nodejs /etc/nginx/sites-enabled/nodejs
+<span class="kw">sudo</span> ln -s /etc/nginx/sites-available/search_[server name] /etc/nginx/sites-enabled/search_[server name]
+<span class="kw">sudo</span> service nginx restart</code></pre></div>
+<p>Next the application needs to be configured by adding the following content to config.json. Remember to update the administration password and secret.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> nano -w /home/www/search_node/config.json</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode apache"><code class="sourceCode apache">{
+  &quot;port&quot;: 3010,
+  &quot;secret&quot;: &quot;[CHANGE ME]&quot;,
+  &quot;admin&quot;: {
+    &quot;username&quot;: &quot;admin&quot;,
+    &quot;password&quot;: &quot;[PASSWORD]&quot;
+  },
+  &quot;log&quot;: {
+    &quot;file&quot;: &quot;messages.log&quot;,
+    &quot;debug&quot;: false
+  },
+  &quot;search&quot;: {
+    &quot;hosts&quot;: [ &quot;localhost:9200&quot; ],
+    &quot;mappings&quot;: &quot;mappings.json&quot;
+  },
+  &quot;apikeys&quot;: &quot;apikeys.json&quot;
+}</code></pre></div>
+<p>Before the application can be started the <em>apikeys.json</em> and <em>mappings.json</em> needs to exist and at least contain an empty JSON object (<em>{}</em>).</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">echo</span> <span class="st">&#39;{}&#39;</span> <span class="kw">&gt;</span> /home/www/search_node/apikeys.json
+<span class="kw">echo</span> <span class="st">&#39;{}&#39;</span> <span class="kw">&gt;</span> /home/www/search_node/mappings.json</code></pre></div>
+<p>The search node needs to be started at boot time which requires a Supervisor run script. Supervisor will also ensure that the node application is restarted, if an error happens and it stops unexpectedly.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> nano -w /etc/supervisor/conf.d/search_node.conf</code></pre></div>
+<p>Supervisor run script for the search node.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">[<span class="kw">program</span>:search-node]
+<span class="ot">command=</span>node <span class="kw">/home/www/search_node/app.js</span>
+<span class="ot">autostart=</span>true
+<span class="ot">autorestart=</span>true
+<span class="ot">environment=</span>NODE_ENV=<span class="kw">production</span>
+<span class="ot">stderr_logfile=</span>/var/log/search-node.err.log
+<span class="ot">stdout_logfile=</span>/var/log/search-node.out.log
+<span class="ot">user=</span>deploy</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> service supervisor restart</code></pre></div>
+<p>As mentioned the search node is not specially created for aroskanalen, so the mappings (configuration for elasticsearch) can be somewhat complex to setup in the UI. To get you started the mapping below can be used as a template for the configuration.</p>
+<p>As we need the UI to complete the setup correctly the node application needs to have write access to the files.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> /home/www/search_node/
+<span class="kw">chmod</span> +w apikeys.json mappings.json</code></pre></div>
+<p>Now use the UI (https://search-[server name].aroskanalen.dk) and add a new api key. Then go to the mappings tabs in the UI and add a new empty mapping. Next edit the mappings file and add the <em>fields</em>, <em>tag</em> and <em>dates</em> section as in the template. This way you will get a new API key and search index key for each installation. <strong>Note</strong> that each installation of the <em>admin</em> application requires a new API key and search index.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">nano</span> -w /home/www/search_node/mappings.json</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode json"><code class="sourceCode json"><span class="fu">{</span>
+  <span class="dt">&quot;5d437a016271077510c640e450bde9c3&quot;</span><span class="fu">:</span> <span class="fu">{</span>
+    <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;demo&quot;</span><span class="fu">,</span>
+    <span class="dt">&quot;tag&quot;</span><span class="fu">:</span> <span class="st">&quot;private&quot;</span><span class="fu">,</span>
+    <span class="dt">&quot;fields&quot;</span><span class="fu">:</span> <span class="ot">[</span>
+      <span class="fu">{</span>
+        <span class="dt">&quot;field&quot;</span><span class="fu">:</span> <span class="st">&quot;title&quot;</span><span class="fu">,</span>
+        <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;string&quot;</span><span class="fu">,</span>
+        <span class="dt">&quot;language&quot;</span><span class="fu">:</span> <span class="st">&quot;da&quot;</span><span class="fu">,</span>
+        <span class="dt">&quot;country&quot;</span><span class="fu">:</span> <span class="st">&quot;DK&quot;</span><span class="fu">,</span>
+        <span class="dt">&quot;default_analyzer&quot;</span><span class="fu">:</span> <span class="st">&quot;string_index&quot;</span><span class="fu">,</span>
+        <span class="dt">&quot;sort&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span>
+        <span class="dt">&quot;indexable&quot;</span><span class="fu">:</span> <span class="kw">true</span>
+      <span class="fu">}</span><span class="ot">,</span>
+      <span class="fu">{</span>
+        <span class="dt">&quot;field&quot;</span><span class="fu">:</span> <span class="st">&quot;name&quot;</span><span class="fu">,</span>
+        <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;string&quot;</span><span class="fu">,</span>
+        <span class="dt">&quot;language&quot;</span><span class="fu">:</span> <span class="st">&quot;da&quot;</span><span class="fu">,</span>
+        <span class="dt">&quot;country&quot;</span><span class="fu">:</span> <span class="st">&quot;DK&quot;</span><span class="fu">,</span>
+        <span class="dt">&quot;default_analyzer&quot;</span><span class="fu">:</span> <span class="st">&quot;string_index&quot;</span><span class="fu">,</span>
+        <span class="dt">&quot;sort&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span>
+        <span class="dt">&quot;indexable&quot;</span><span class="fu">:</span> <span class="kw">true</span>
+      <span class="fu">}</span>
+    <span class="ot">]</span><span class="fu">,</span>
+    <span class="dt">&quot;dates&quot;</span><span class="fu">:</span> <span class="ot">[</span>
+      <span class="st">&quot;created_at&quot;</span><span class="ot">,</span>
+      <span class="st">&quot;updated_at&quot;</span>
+    <span class="ot">]</span>
+  <span class="fu">}</span>
+<span class="fu">}</span></code></pre></div>
+<p>When you have update the mappings file go back into the UI and select the indexes that you need by edit the API key and select it/them in the edit window. Before a given index can be used you need to activate it in the <em>indexes</em> tab. So do that now.</p>
+<h3 id="ui">UI</h3>
+<p><span class="citation">@TODO</span>: How to use the UI to add more configuration.</p>
+<h1 id="elasticsearch">Elasticsearch</h1>
+<p>Search node used elasticsearch 1.5.x as its search engine and it needs to be installed as well.</p>
+First install java that is used to run elasticsearch.
+<pre>
+sudo apt-get install openjdk-7-jre -y > /dev/null 2>&1
+</pre>
+Download and install the engine.
+<pre>
+sudo -i
+cd /root
+wget https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.1.deb
+dpkg -i elasticsearch-1.7.1.deb
+update-rc.d elasticsearch defaults 95 10
+</pre>
+To enable ICU support (unicode) please install this plugin.
+<pre>
+sudo /usr/share/elasticsearch/bin/plugin -install elasticsearch/elasticsearch-analysis-icu/2.5.0
+</pre>
+For debuggin elasticsearch this small administration interface can come handy, but its optional.
+<pre>
+/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head
+</pre>
+<h1 id="javascript-frontend">JavaScript frontend</h1>
+<p>Uses <a href="https://angularjs.org/">AngularJS</a>.</p>
+<h1 id="drupal-modules">Drupal modules</h1>
+<h2 id="panels-vs.-blocks">Panels vs. blocks</h2>
+<h2 id="configuration-1">Configuration</h2>
+<div class="figure">
+<img src="./images/test.png" title="Optional title" alt="Alt text" />
+<p class="caption">Alt text</p>
+</div>
+<h2 id="override-search-controller">Override search controller</h2>
+</body>
+</html>

@@ -1,0 +1,12 @@
+---
+title: 'Search node'
+author: Jesper Ksitensen
+tags: [nothing, nothingness]
+abstract: |
+  Search node is an NodeJs frontend to elastic-search that added API-keys and an administration UI. It uses web-sockets to communication with an frontend written in AngularJS.
+  \newline\newline
+  This document explains how to install search node and extend the AngularJS frontend.
+  This document also includes information about installtion and configuring the Druapl modules.
+  \newpage
+...
+fig_caption: yes
