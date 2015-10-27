@@ -11,6 +11,14 @@ AngularJS in libraries folder (angular/angular.min.js) -> 1.4.x
 
 ## Configuration
 
-![Alt text](./images/test.png "Optional title")
-
 ## Override search controller
+
+search-node-page-search-box.tpl.php
+
+```html
+<div id="searchBoxApp" data-ng-strict-di data-ng-controller="UlfBoxController">
+  <span data-ng-include="template">
+    JavaScript have not been loaded.
+  </span>
+</div>
+```

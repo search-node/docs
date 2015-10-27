@@ -298,6 +298,16 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
       margin: 0;
   }
   
+  .figure {
+    text-align: center;
+  }
+  
+  .figure .caption {
+    font-style: italic;
+    font-variant: small-caps;
+  }
+  
+  
   /* ==========================================================================
      Forms
      ========================================================================== */
@@ -492,8 +502,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#ui">UI</a></li>
 </ul></li>
 <li><a href="#angularjs-front-end">AngularJS (front end)</a><ul>
-<li><a href="#configuration-1">Configuration</a></li>
-<li><a href="#override">Override</a></li>
+<li><a href="#configuration-1">Configuration</a><ul>
+<li><a href="#loading">Loading</a></li>
+<li><a href="#application-targets">Application targets</a></li>
+</ul></li>
 <li><a href="#development-search-prototype">Development (search prototype)</a><ul>
 <li><a href="#cache-md5">Cache + md5</a></li>
 <li><a href="#vagrant">Vagrant</a></li>
@@ -504,6 +516,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#configuration-2">Configuration</a></li>
 <li><a href="#override-search-controller">Override search controller</a></li>
 </ul></li>
+<li><a href="#examples">Examples</a></li>
 </ul>
 </div>
 <!-- Ensures that TOC is on it's own page -->
@@ -721,20 +734,116 @@ server {
 <h1 id="angularjs-front-end">AngularJS (front end)</h1>
 <p>The search front-end that users interact with is written in <a href="https://angularjs.org/">AngularJS</a> and is developed in the <a href="https://github.com/search-node/searchpt">search prototype</a> git repository. The script files that should be used in production is the minified versions that are build using a <a href="http://gulpjs.com/">gulp</a> task and is located in the build folder.</p>
 <p>The Angular front-end is in fact to applications that communicates with each other, namely search box and search results. It’s divided into two applications to create a more flexible front end, that can be placed in different regions on a given page. This also makes it easier to integrate the search into existing CMS frameworks.</p>
+<p>The Angular application(s) can use different providers, so it’s possible to search via search node or in a JSON data file for faster prototype testing (JSON provider correctly don’t support all feature sets yet). One could also create a whole new provider to send search request to third party search engines.</p>
+<p>It’s build using these parts seen from a top-down view.</p>
+<ul>
+<li>Views (templates)
+<ul>
+<li>Search box (plus filters)</li>
+<li>Search results (plus pager and searching spinner)</li>
+</ul></li>
+<li>Controllers
+<ul>
+<li>Search box</li>
+<li>Results</li>
+</ul></li>
+<li>Services
+<ul>
+<li>Search proxy (sends work to configured provider)</li>
+<li>Communication (handle events between the to applications)</li>
+</ul></li>
+<li>Providers
+<ul>
+<li>Search node</li>
+<li>JSON</li>
+</ul></li>
+</ul>
+<!-- Image showing how the different parts communicates. -->
+<div class="figure">
+<img src="./images/search_page.png" title="Search node framework" alt="Search node framework" />
+<p class="caption">Search node framework</p>
+</div>
 <h2 id="configuration-1">Configuration</h2>
 <p>config.js</p>
 <p><strong>Note</strong> api-keys “R” vs. “RW” to protect search index.</p>
-<h2 id="override">Override</h2>
-<div class="sourceCode"><pre class="sourceCode html"><code class="sourceCode html"><span class="kw">&lt;form</span><span class="ot"> id=</span><span class="st">&quot;searchBoxApp&quot;</span><span class="ot"> data-ng-strict-di data-ng-controller=</span><span class="st">&quot;boxController&quot;</span><span class="kw">&gt;</span>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="va">angular</span>.<span class="at">module</span>(<span class="st">&#39;searchAppConfig&#39;</span><span class="op">,</span> [])
+  .<span class="at">constant</span>(<span class="st">&#39;CONFIG&#39;</span><span class="op">,</span> <span class="op">{</span>
+    <span class="st">&#39;id&#39;</span> <span class="op">:</span> <span class="st">&#39;Search prototype&#39;</span><span class="op">,</span>
+    <span class="st">&#39;initialQueryText&#39;</span><span class="op">:</span> <span class="st">&#39;&#39;</span><span class="op">,</span>
+    <span class="st">&#39;templates&#39;</span><span class="op">:</span> <span class="op">{</span>
+      <span class="st">&#39;box&#39;</span><span class="op">:</span> <span class="st">&#39;/js/views/search.html&#39;</span><span class="op">,</span>
+      <span class="st">&#39;result&#39;</span><span class="op">:</span> <span class="st">&#39;/js/views/result.html&#39;</span><span class="op">,</span>
+      <span class="st">&#39;pager&#39;</span><span class="op">:</span> <span class="st">&#39;/js/directive/pager-directive.html&#39;</span>
+    <span class="op">},</span>
+    <span class="st">&#39;provider&#39;</span><span class="op">:</span> <span class="op">{</span>
+      <span class="st">&#39;service&#39;</span><span class="op">:</span> <span class="st">&#39;searchNodeProvider&#39;</span><span class="op">,</span>
+      <span class="st">&#39;host&#39;</span><span class="op">:</span> <span class="st">&#39;https://search.node.vm&#39;</span><span class="op">,</span>
+      <span class="st">&#39;auth&#39;</span><span class="op">:</span> <span class="st">&#39;/auth.php&#39;</span><span class="op">,</span>
+      <span class="st">&#39;index&#39;</span><span class="op">:</span> <span class="st">&#39;e7df7cd2ca07f4f1ab415d457a6e1c13&#39;</span><span class="op">,</span>
+      <span class="st">&#39;fields&#39;</span><span class="op">:</span> [<span class="st">&#39;title&#39;</span><span class="op">,</span> <span class="st">&#39;body:value&#39;</span>]<span class="op">,</span>
+      <span class="st">&#39;pager&#39;</span><span class="op">:</span> <span class="op">{</span>
+        <span class="st">&#39;size&#39;</span><span class="op">:</span> <span class="dv">8</span><span class="op">,</span>
+        <span class="st">&#39;page&#39;</span><span class="op">:</span> <span class="dv">0</span>
+      <span class="op">},</span>
+      <span class="st">&#39;cacheExpire&#39;</span><span class="op">:</span> <span class="dv">5</span><span class="op">,</span>
+      <span class="st">&#39;intervals&#39;</span><span class="op">:</span> [<span class="st">&#39;created&#39;</span>]<span class="op">,</span>
+      <span class="st">&#39;filters&#39;</span><span class="op">:</span> [
+        <span class="op">{</span>
+          <span class="st">&#39;field&#39;</span><span class="op">:</span> <span class="st">&#39;field_level&#39;</span><span class="op">,</span>
+          <span class="st">&#39;name&#39;</span><span class="op">:</span> <span class="st">&#39;Level&#39;</span><span class="op">,</span>
+          <span class="st">&#39;type&#39;</span><span class="op">:</span> <span class="st">&#39;and&#39;</span><span class="op">,</span>
+          <span class="st">&#39;terms&#39;</span><span class="op">:</span> <span class="op">{</span>
+            <span class="st">&quot;First&quot;</span><span class="op">:</span> <span class="op">{</span>
+              <span class="st">&#39;value&#39;</span><span class="op">:</span> <span class="st">&#39;First&#39;</span>
+            <span class="op">},</span>
+            <span class="st">&quot;Second&quot;</span><span class="op">:</span> <span class="op">{</span>
+              <span class="st">&#39;value&#39;</span><span class="op">:</span> <span class="st">&#39;Second&#39;</span>
+            <span class="op">},</span>
+            <span class="st">&quot;Third&quot;</span><span class="op">:</span> <span class="op">{</span>
+              <span class="st">&#39;value&#39;</span><span class="op">:</span> <span class="st">&#39;Third&#39;</span>
+            <span class="op">},</span>
+            <span class="st">&quot;Fourth&quot;</span><span class="op">:</span> <span class="op">{</span>
+              <span class="st">&#39;value&#39;</span><span class="op">:</span> <span class="st">&#39;Fourth&#39;</span>
+            <span class="op">},</span>
+          <span class="op">}</span>
+        <span class="op">},</span>
+        <span class="op">{</span>
+          <span class="st">&#39;field&#39;</span><span class="op">:</span> <span class="st">&#39;field_teknologi&#39;</span><span class="op">,</span>
+          <span class="st">&#39;name&#39;</span><span class="op">:</span> <span class="st">&#39;Teknologi&#39;</span><span class="op">,</span>
+          <span class="st">&#39;type&#39;</span><span class="op">:</span> <span class="st">&#39;and&#39;</span><span class="op">,</span>
+          <span class="st">&#39;terms&#39;</span><span class="op">:</span> <span class="op">{</span>
+            <span class="st">&quot;Angular&quot;</span><span class="op">:</span> <span class="op">{</span>
+              <span class="st">&#39;value&#39;</span><span class="op">:</span> <span class="st">&#39;Angular&#39;</span>
+            <span class="op">},</span>
+            <span class="st">&quot;Javascript&quot;</span><span class="op">:</span> <span class="op">{</span>
+              <span class="st">&#39;value&#39;</span><span class="op">:</span> <span class="st">&#39;Javascript&#39;</span>
+            <span class="op">},</span>
+          <span class="op">}</span>
+        <span class="op">}</span>
+      ]
+    <span class="op">}</span>
+  <span class="op">}</span>)<span class="op">;</span></code></pre></div>
+<h3 id="loading">Loading</h3>
+<div class="sourceCode"><pre class="sourceCode html"><code class="sourceCode html"><span class="co">&lt;!-- Load angular  --&gt;</span>
+<span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;angular.min.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span>
+
+<span class="co">&lt;!-- Load the application configuration --&gt;</span>
+<span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;config.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span>
+
+<span class="co">&lt;!-- Load the app --&gt;</span>
+<span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;assets.min.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span>
+<span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;search.min.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></code></pre></div>
+<h3 id="application-targets">Application targets</h3>
+<div class="sourceCode"><pre class="sourceCode html"><code class="sourceCode html"><span class="kw">&lt;div</span><span class="ot"> id=</span><span class="st">&quot;searchBoxApp&quot;</span><span class="ot"> data-ng-strict-di data-ng-controller=</span><span class="st">&quot;boxController&quot;</span><span class="kw">&gt;</span>
   <span class="kw">&lt;span</span><span class="ot"> data-ng-include=</span><span class="st">&quot;template&quot;</span><span class="kw">&gt;</span>
     JavaScript have not been loaded.
   <span class="kw">&lt;/span&gt;</span>
-<span class="kw">&lt;/form&gt;</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode html"><code class="sourceCode html"><span class="kw">&lt;form</span><span class="ot"> id=</span><span class="st">&quot;searchResultApp&quot;</span><span class="ot"> data-ng-strict-di data-ng-controller=</span><span class="st">&quot;resultController&quot;</span> <span class="kw">&gt;</span>
+<span class="kw">&lt;/div&gt;</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode html"><code class="sourceCode html"><span class="kw">&lt;div</span><span class="ot"> id=</span><span class="st">&quot;searchResultApp&quot;</span><span class="ot"> data-ng-strict-di data-ng-controller=</span><span class="st">&quot;resultController&quot;</span> <span class="kw">&gt;</span>
   <span class="kw">&lt;span</span><span class="ot"> data-ng-include=</span><span class="st">&quot;template&quot;</span><span class="kw">&gt;</span>
     JavaScript have not been loaded.
   <span class="kw">&lt;/span&gt;</span>
-<span class="kw">&lt;/form&gt;</span></code></pre></div>
+<span class="kw">&lt;/div&gt;</span></code></pre></div>
 <h2 id="development-search-prototype">Development (search prototype)</h2>
 <h3 id="cache-md5">Cache + md5</h3>
 <p>https://github.com/search-node/searchpt</p>
@@ -753,5 +862,16 @@ server {
 <p class="caption">Alt text</p>
 </div>
 <h2 id="override-search-controller">Override search controller</h2>
+<p>search-node-page-search-box.tpl.php</p>
+<div class="sourceCode"><pre class="sourceCode html"><code class="sourceCode html"><span class="kw">&lt;div</span><span class="ot"> id=</span><span class="st">&quot;searchBoxApp&quot;</span><span class="ot"> data-ng-strict-di data-ng-controller=</span><span class="st">&quot;UlfBoxController&quot;</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;span</span><span class="ot"> data-ng-include=</span><span class="st">&quot;template&quot;</span><span class="kw">&gt;</span>
+    JavaScript have not been loaded.
+  <span class="kw">&lt;/span&gt;</span>
+<span class="kw">&lt;/div&gt;</span></code></pre></div>
+<h1 id="examples">Examples</h1>
+<p>This section lists sites that are using search node.</p>
+<ul>
+<li>ULF i Aarhus - <a href="http://ulfiaarhus.dk/dagtilbud" class="uri">http://ulfiaarhus.dk/dagtilbud</a></li>
+</ul>
 </body>
 </html>
