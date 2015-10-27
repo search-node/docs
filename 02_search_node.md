@@ -244,6 +244,8 @@ cat /home/www/search_node/mappings.json
 }
 ```
 
+__Note__ api-keys "R" vs. "RW" to protect search index.
+
 ```bash
 cat apikeys.json
 ```

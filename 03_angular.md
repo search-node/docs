@@ -10,6 +10,9 @@ It's build using these parts seen from a top-down view.
 * Views (templates)
     * Search box (plus filters)
     * Search results (plus pager and searching spinner)
+    * Directives
+        * KeyCode (capture keyboard events)
+        * Pager
 * Controllers
     * Search box
     * Results
@@ -20,17 +23,27 @@ It's build using these parts seen from a top-down view.
     * Search node
     * JSON
 
-<!-- Image showing how the different parts communicates. -->
+The figure below show how these different components interact with each other and how the date flow is between the two Angular applications. The figure also shows that the configuration is load as an Angular module and is accessible through independency injection (_CONFIG_) throughout the whole framework.
+
 ![Search node framework](./images/search_page.png "Search node framework")
 
-
 ## Configuration
+The whole setup is highly configurable and can easily be modified through the configuration (and it's behaviour can be changed by coping, modifying and overriding the contorllers). The configuration is loaded as an Angular module, that can be auto-generated from within a CMS framework or simply typed by hand and added to the page before the application is loaded.
 
+The configuration is defined in JSON and is divided into three parts.
 
-config.js
+* Basic configuration
+    * Id (required) - Unique id for this instanced (used in cache id's for localstorage).
+    * initialQueryText (optiona) - Search that will be executed on page load.
+* Templates (all required)
+    * box - The template used to generate the search box and filters area.
+    * result - The results listing template and also the searching spinner.
+    * pager - The template used by the pager.
+* Provider
+    * service (required) - The provider to use.
+    * All other are provide configuration options.
 
-__Note__ api-keys "R" vs. "RW" to protect search index.
-
+The example below is for the search node provider and show the different options available for that provider. The [search prototype][searchpt] repository contains example configuration for the different providers.
 ```javascript
 angular.module('searchAppConfig', [])
   .constant('CONFIG', {
@@ -51,7 +64,7 @@ angular.module('searchAppConfig', [])
         'size': 8,
         'page': 0
       },
-      'cacheExpire': 5,
+      'cacheExpire': 30,
       'intervals': ['created'],
       'filters': [
         {
@@ -74,8 +87,8 @@ angular.module('searchAppConfig', [])
           }
         },
         {
-          'field': 'field_teknologi',
-          'name': 'Teknologi',
+          'field': 'field_technology',
+          'name': 'Technology',
           'type': 'and',
           'terms': {
             "Angular": {
@@ -91,7 +104,10 @@ angular.module('searchAppConfig', [])
   });
 ```
 
-### Loading
+@TODO: Above is missing date examples for the search provider.
+
+### Loading the applications.
+It's important to load the different parts
 
 ```html
 <!-- Load angular  -->
@@ -127,7 +143,11 @@ angular.module('searchAppConfig', [])
 
 ### Cache + md5
 
-https://github.com/search-node/searchpt
 
+### Build process
+
+```bash
+gulp build --production
+```
 
 ### Vagrant
