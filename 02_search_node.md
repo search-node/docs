@@ -4,8 +4,33 @@ This part of the guide explains how to get the search node [nodeJS][nodejs] appl
 ## Installation
 The installation process requires you clone the application, download node modules and define JSON configuration files.
 
+### Elasticsearch
+Search node used elasticsearch 1.7.x as its search engine and it needs to be installed as well. _Note_ that currently the nodeJS module only supports this as the newest version.
+
+First install Java that is used to run elasticsearch.
+```bash
+sudo apt-get install openjdk-7-jre -y > /dev/null 2>&1
+```
+
+Download and install the search engine.
+```bash
+wget https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.1.deb
+sudo dpkg -i elasticsearch-1.7.1.deb
+sudo update-rc.d elasticsearch defaults 95 10
+```
+
+To enable ICU support (unicode) please install this plugin, which is required for search node to work properly.
+```bash
+sudo /usr/share/elasticsearch/bin/plugin -install elasticsearch/elasticsearch-analysis-icu/2.5.0
+```
+
+For debugging elasticsearch this small administration interface can come handy, but its __optional__.
+```bash
+sudo /usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head
+```
+
 ### Clone
-Start by cloning the git repository for search node and checkout the latest release tag (which can be found using _git tag_).
+Next clone the git repository for search node and checkout the latest release tag (which can be found using _git tag_ command inside the repository after the clone).
 
 ```bash
 cd /home/www
@@ -148,7 +173,6 @@ sudo nano -w /etc/supervisor/conf.d/search_node.conf
 ```
 
 Supervisor run script for the search node.
-
 ```bash
 [program:search-node]
 command=node /home/www/search_node/app.js
@@ -172,15 +196,24 @@ cd /home/www/search_node/
 chmod +w apikeys.json mappings.json
 ```
 
-Now use the UI (https://search-[server name].aroskanalen.dk) and add a new api key. Then go to the mappings tabs in the UI and add a new empty mapping. Next edit the mappings file and add the _fields_, _tag_ and _dates_ section as in the template. This way you will get a new API key and search index key for each installation. __Note__ that each installation of the _admin_ application requires a new API key and search index.
+Now use the UI (https://search-[server name].aroskanalen.dk)
 
+When you have update the mappings file go back into the UI and select the indexes that you need by edit the API key and select it/them in the edit window. Before a given index can be used you need to activate it in the _indexes_ tab. So do that now.
+
+## UI
+
+@TODO: How to use the UI to add more configuration.
+
+and create a new index using the mappings tabs in the UI and add the mappings that you require for a given index. We will go into details about how to configure the mappings correctly in the UI section and in the Drupal section we will show an example for an simple Drupal entity. After the a index have been created (and activated)
+
+After having create an
 ```bash
-nano -w /home/www/search_node/mappings.json
+cat /home/www/search_node/mappings.json
 ```
 
 ```json
 {
-  "5d437a016271077510c640e450bde9c3": {
+  "795359dd2c81fa41af67faa2f9adbd32": {
     "name": "demo",
     "tag": "private",
     "fields": [
@@ -211,35 +244,19 @@ nano -w /home/www/search_node/mappings.json
 }
 ```
 
-When you have update the mappings file go back into the UI and select the indexes that you need by edit the API key and select it/them in the edit window. Before a given index can be used you need to activate it in the _indexes_ tab. So do that now.
+```bash
+cat apikeys.json
+```
 
-### UI
-
-@TODO: How to use the UI to add more configuration.
-
-# Elasticsearch
-Search node used elasticsearch 1.5.x as its search engine and it needs to be installed as well.
-
-First install java that is used to run elasticsearch.
-<pre>
-sudo apt-get install openjdk-7-jre -y > /dev/null 2>&1
-</pre>
-
-Download and install the engine.
-<pre>
-sudo -i
-cd /root
-wget https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.1.deb
-dpkg -i elasticsearch-1.7.1.deb
-update-rc.d elasticsearch defaults 95 10
-</pre>
-
-To enable ICU support (unicode) please install this plugin.
-<pre>
-sudo /usr/share/elasticsearch/bin/plugin -install elasticsearch/elasticsearch-analysis-icu/2.5.0
-</pre>
-
-For debuggin elasticsearch this small administration interface can come handy, but its optional.
-<pre>
-/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head
-</pre>
+```json
+{
+  "795359dd2c81fa41af67faa2f9adbd32": {
+    "name": "Test",
+    "expire": 300,
+    "indexes": [
+      "e7df7cd2ca07f4f1ab415d457a6e1c13"
+    ],
+    "access": "rw"
+  }
+}
+```
