@@ -106,8 +106,8 @@ angular.module('searchAppConfig', [])
 
 @TODO: Above is missing date examples for the search provider.
 
-### Loading the applications.
-It's important to load the different parts in the right order as shown in the example below.
+## Loading the applications.
+It's important to load the different parts off the application in the right order as shown in the example below. This will ensure that the dependencies are resolved correctly.
 
 ```html
 <!-- Load angular  -->
@@ -121,25 +121,29 @@ It's important to load the different parts in the right order as shown in the ex
 <script src="search.min.js"></script>
 ```
 
-### Bootstrap process and override
-
-@TODO: Explain how the to applications are bootstrapped and how to override the controllers.
+## Bootstrap process and override
+In order to customize the application one can look at the HTML used to bootstrap the application and override the controller used. When you overload the controller you will be able to change the behaviour of the application, such as adding date pop-ups or change the filters to be able to close/open and change the default search behaviour. See [http://ulfiaarhus.dk][ulfiaarhus] as an example of a override that adds new look and fell to the applications.
 
 ```html
+<!-- Search box and filters -->
 <div id="searchBoxApp" data-ng-strict-di data-ng-controller="boxController">
   <span data-ng-include="template">
     JavaScript have not been loaded.
   </span>
 </div>
-```
 
-```html
+<!-- Results, spinner and pager -->
 <div id="searchResultApp" data-ng-strict-di data-ng-controller="resultController" >
   <span data-ng-include="template">
     JavaScript have not been loaded.
   </span>
 </div>
 ```
+
+
+
+@TODO: Explain how the to applications are bootstrapped and how to override the controllers.
+
 
 ## Development (search prototype)
 

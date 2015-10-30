@@ -502,14 +502,13 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#ui"><span class="toc-section-number">2.2</span> UI</a></li>
 </ul></li>
 <li><a href="#angularjs-front-end"><span class="toc-section-number">3</span> AngularJS (front end)</a><ul>
-<li><a href="#configuration-1"><span class="toc-section-number">3.1</span> Configuration</a><ul>
-<li><a href="#loading-the-applications."><span class="toc-section-number">3.1.1</span> Loading the applications.</a></li>
-<li><a href="#bootstrap-process-and-override"><span class="toc-section-number">3.1.2</span> Bootstrap process and override</a></li>
-</ul></li>
-<li><a href="#development-search-prototype"><span class="toc-section-number">3.2</span> Development (search prototype)</a><ul>
-<li><a href="#cache-md5"><span class="toc-section-number">3.2.1</span> Cache + md5</a></li>
-<li><a href="#build-process"><span class="toc-section-number">3.2.2</span> Build process</a></li>
-<li><a href="#vagrant"><span class="toc-section-number">3.2.3</span> Vagrant</a></li>
+<li><a href="#configuration-1"><span class="toc-section-number">3.1</span> Configuration</a></li>
+<li><a href="#loading-the-applications."><span class="toc-section-number">3.2</span> Loading the applications.</a></li>
+<li><a href="#bootstrap-process-and-override"><span class="toc-section-number">3.3</span> Bootstrap process and override</a></li>
+<li><a href="#development-search-prototype"><span class="toc-section-number">3.4</span> Development (search prototype)</a><ul>
+<li><a href="#cache-md5"><span class="toc-section-number">3.4.1</span> Cache + md5</a></li>
+<li><a href="#build-process"><span class="toc-section-number">3.4.2</span> Build process</a></li>
+<li><a href="#vagrant"><span class="toc-section-number">3.4.3</span> Vagrant</a></li>
 </ul></li>
 </ul></li>
 <li><a href="#drupal-modules"><span class="toc-section-number">4</span> Drupal modules</a><ul>
@@ -852,8 +851,8 @@ server {
     <span class="op">}</span>
   <span class="op">}</span>)<span class="op">;</span></code></pre></div>
 <p><span class="citation">@TODO</span>: Above is missing date examples for the search provider.</p>
-<h3 id="loading-the-applications."><span class="header-section-number">3.1.1</span> Loading the applications.</h3>
-<p>It’s important to load the different parts in the right order as shown in the example below.</p>
+<h2 id="loading-the-applications."><span class="header-section-number">3.2</span> Loading the applications.</h2>
+<p>It’s important to load the different parts off the application in the right order as shown in the example below. This will ensure that the dependencies are resolved correctly.</p>
 <div class="sourceCode"><pre class="sourceCode html"><code class="sourceCode html"><span class="co">&lt;!-- Load angular  --&gt;</span>
 <span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;angular.min.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span>
 
@@ -863,26 +862,30 @@ server {
 <span class="co">&lt;!-- Load the app --&gt;</span>
 <span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;assets.min.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span>
 <span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;search.min.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></code></pre></div>
-<h3 id="bootstrap-process-and-override"><span class="header-section-number">3.1.2</span> Bootstrap process and override</h3>
+<h2 id="bootstrap-process-and-override"><span class="header-section-number">3.3</span> Bootstrap process and override</h2>
+<p>In order to customize the application one can look at the HTML used to bootstrap the application and override the controller used. When you overload the controller you will be able to change the behaviour of the application, such as adding date pop-ups or change the filters to be able to close/open and change the default search behaviour. See <a href="http://ulfiaarhus.dk/dagtilbud">http://ulfiaarhus.dk</a> as an example of a override that adds new look and fell to the applications.</p>
+<div class="sourceCode"><pre class="sourceCode html"><code class="sourceCode html"><span class="co">&lt;!-- Search box and filters --&gt;</span>
+<span class="kw">&lt;div</span><span class="ot"> id=</span><span class="st">&quot;searchBoxApp&quot;</span><span class="ot"> data-ng-strict-di data-ng-controller=</span><span class="st">&quot;boxController&quot;</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;span</span><span class="ot"> data-ng-include=</span><span class="st">&quot;template&quot;</span><span class="kw">&gt;</span>
+    JavaScript have not been loaded.
+  <span class="kw">&lt;/span&gt;</span>
+<span class="kw">&lt;/div&gt;</span>
+
+<span class="co">&lt;!-- Results, spinner and pager --&gt;</span>
+<span class="kw">&lt;div</span><span class="ot"> id=</span><span class="st">&quot;searchResultApp&quot;</span><span class="ot"> data-ng-strict-di data-ng-controller=</span><span class="st">&quot;resultController&quot;</span> <span class="kw">&gt;</span>
+  <span class="kw">&lt;span</span><span class="ot"> data-ng-include=</span><span class="st">&quot;template&quot;</span><span class="kw">&gt;</span>
+    JavaScript have not been loaded.
+  <span class="kw">&lt;/span&gt;</span>
+<span class="kw">&lt;/div&gt;</span></code></pre></div>
 <p><span class="citation">@TODO</span>: Explain how the to applications are bootstrapped and how to override the controllers.</p>
-<div class="sourceCode"><pre class="sourceCode html"><code class="sourceCode html"><span class="kw">&lt;div</span><span class="ot"> id=</span><span class="st">&quot;searchBoxApp&quot;</span><span class="ot"> data-ng-strict-di data-ng-controller=</span><span class="st">&quot;boxController&quot;</span><span class="kw">&gt;</span>
-  <span class="kw">&lt;span</span><span class="ot"> data-ng-include=</span><span class="st">&quot;template&quot;</span><span class="kw">&gt;</span>
-    JavaScript have not been loaded.
-  <span class="kw">&lt;/span&gt;</span>
-<span class="kw">&lt;/div&gt;</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode html"><code class="sourceCode html"><span class="kw">&lt;div</span><span class="ot"> id=</span><span class="st">&quot;searchResultApp&quot;</span><span class="ot"> data-ng-strict-di data-ng-controller=</span><span class="st">&quot;resultController&quot;</span> <span class="kw">&gt;</span>
-  <span class="kw">&lt;span</span><span class="ot"> data-ng-include=</span><span class="st">&quot;template&quot;</span><span class="kw">&gt;</span>
-    JavaScript have not been loaded.
-  <span class="kw">&lt;/span&gt;</span>
-<span class="kw">&lt;/div&gt;</span></code></pre></div>
-<h2 id="development-search-prototype"><span class="header-section-number">3.2</span> Development (search prototype)</h2>
+<h2 id="development-search-prototype"><span class="header-section-number">3.4</span> Development (search prototype)</h2>
 <p><span class="citation">@TODO</span>: Why the searchpt project and how to contribute to the solution.</p>
-<h3 id="cache-md5"><span class="header-section-number">3.2.1</span> Cache + md5</h3>
+<h3 id="cache-md5"><span class="header-section-number">3.4.1</span> Cache + md5</h3>
 <p><span class="citation">@TODO</span>: What is cached and how is the cache controlled.</p>
-<h3 id="build-process"><span class="header-section-number">3.2.2</span> Build process</h3>
+<h3 id="build-process"><span class="header-section-number">3.4.2</span> Build process</h3>
 <p><span class="citation">@TODO</span>: How to build a new version of the minified files.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">gulp</span> build --production</code></pre></div>
-<h3 id="vagrant"><span class="header-section-number">3.2.3</span> Vagrant</h3>
+<h3 id="vagrant"><span class="header-section-number">3.4.3</span> Vagrant</h3>
 <p><span class="citation">@TODO</span>: The vagrant used to do the development and what it sets up.</p>
 <h1 id="drupal-modules"><span class="header-section-number">4</span> Drupal modules</h1>
 <p><span class="citation">@TODO</span>: Explain the modules and what they require and the idea.</p>
@@ -898,6 +901,7 @@ server {
 <p><span class="citation">@TODO</span>: How to use the panes or blocks provide by the modules.</p>
 <h2 id="configuration-2"><span class="header-section-number">4.3</span> Configuration</h2>
 <p><span class="citation">@TODO</span>: How to configure search API to use search node. <span class="citation">@TODO</span>: How to configure the blocks/panes</p>
+<p><span class="citation">@TODO</span>: Index data - cron uri parameter (default/).</p>
 <h2 id="override-search-controller"><span class="header-section-number">4.4</span> Override search controller</h2>
 <p><span class="citation">@TODO</span>: How to overrride the contoller (in drupal) and link to ulf as an example.</p>
 <p>search-node-page-search-box.tpl.php</p>

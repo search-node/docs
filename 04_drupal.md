@@ -21,6 +21,8 @@ AngularJS in libraries folder (angular/angular.min.js) -> 1.4.x
 @TODO: How to configure search API to use search node.
 @TODO: How to configure the blocks/panes
 
+@TODO: Index data - cron uri parameter (default/).
+
 ## Override search controller
 
 @TODO: How to overrride the contoller (in drupal) and link to ulf as an example.
