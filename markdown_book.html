@@ -504,7 +504,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#angularjs-front-end"><span class="toc-section-number">3</span> AngularJS (front end)</a><ul>
 <li><a href="#configuration-1"><span class="toc-section-number">3.1</span> Configuration</a><ul>
 <li><a href="#loading-the-applications."><span class="toc-section-number">3.1.1</span> Loading the applications.</a></li>
-<li><a href="#application-targets"><span class="toc-section-number">3.1.2</span> Application targets</a></li>
+<li><a href="#bootstrap-process-and-override"><span class="toc-section-number">3.1.2</span> Bootstrap process and override</a></li>
 </ul></li>
 <li><a href="#development-search-prototype"><span class="toc-section-number">3.2</span> Development (search prototype)</a><ul>
 <li><a href="#cache-md5"><span class="toc-section-number">3.2.1</span> Cache + md5</a></li>
@@ -513,9 +513,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 </ul></li>
 <li><a href="#drupal-modules"><span class="toc-section-number">4</span> Drupal modules</a><ul>
-<li><a href="#panels-vs.blocks"><span class="toc-section-number">4.1</span> Panels vs. blocks</a></li>
-<li><a href="#configuration-2"><span class="toc-section-number">4.2</span> Configuration</a></li>
-<li><a href="#override-search-controller"><span class="toc-section-number">4.3</span> Override search controller</a></li>
+<li><a href="#installation-1"><span class="toc-section-number">4.1</span> Installation</a></li>
+<li><a href="#panels-vs.blocks"><span class="toc-section-number">4.2</span> Panels vs. blocks</a></li>
+<li><a href="#configuration-2"><span class="toc-section-number">4.3</span> Configuration</a></li>
+<li><a href="#override-search-controller"><span class="toc-section-number">4.4</span> Override search controller</a></li>
 </ul></li>
 <li><a href="#roadmap"><span class="toc-section-number">5</span> Roadmap</a></li>
 <li><a href="#examples"><span class="toc-section-number">6</span> Examples</a></li>
@@ -852,7 +853,7 @@ server {
   <span class="op">}</span>)<span class="op">;</span></code></pre></div>
 <p><span class="citation">@TODO</span>: Above is missing date examples for the search provider.</p>
 <h3 id="loading-the-applications."><span class="header-section-number">3.1.1</span> Loading the applications.</h3>
-<p>It’s important to load the different parts</p>
+<p>It’s important to load the different parts in the right order as shown in the example below.</p>
 <div class="sourceCode"><pre class="sourceCode html"><code class="sourceCode html"><span class="co">&lt;!-- Load angular  --&gt;</span>
 <span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;angular.min.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span>
 
@@ -862,7 +863,8 @@ server {
 <span class="co">&lt;!-- Load the app --&gt;</span>
 <span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;assets.min.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span>
 <span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;search.min.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></code></pre></div>
-<h3 id="application-targets"><span class="header-section-number">3.1.2</span> Application targets</h3>
+<h3 id="bootstrap-process-and-override"><span class="header-section-number">3.1.2</span> Bootstrap process and override</h3>
+<p><span class="citation">@TODO</span>: Explain how the to applications are bootstrapped and how to override the controllers.</p>
 <div class="sourceCode"><pre class="sourceCode html"><code class="sourceCode html"><span class="kw">&lt;div</span><span class="ot"> id=</span><span class="st">&quot;searchBoxApp&quot;</span><span class="ot"> data-ng-strict-di data-ng-controller=</span><span class="st">&quot;boxController&quot;</span><span class="kw">&gt;</span>
   <span class="kw">&lt;span</span><span class="ot"> data-ng-include=</span><span class="st">&quot;template&quot;</span><span class="kw">&gt;</span>
     JavaScript have not been loaded.
@@ -874,20 +876,30 @@ server {
   <span class="kw">&lt;/span&gt;</span>
 <span class="kw">&lt;/div&gt;</span></code></pre></div>
 <h2 id="development-search-prototype"><span class="header-section-number">3.2</span> Development (search prototype)</h2>
+<p><span class="citation">@TODO</span>: Why the searchpt project and how to contribute to the solution.</p>
 <h3 id="cache-md5"><span class="header-section-number">3.2.1</span> Cache + md5</h3>
+<p><span class="citation">@TODO</span>: What is cached and how is the cache controlled.</p>
 <h3 id="build-process"><span class="header-section-number">3.2.2</span> Build process</h3>
+<p><span class="citation">@TODO</span>: How to build a new version of the minified files.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">gulp</span> build --production</code></pre></div>
 <h3 id="vagrant"><span class="header-section-number">3.2.3</span> Vagrant</h3>
+<p><span class="citation">@TODO</span>: The vagrant used to do the development and what it sets up.</p>
 <h1 id="drupal-modules"><span class="header-section-number">4</span> Drupal modules</h1>
+<p><span class="citation">@TODO</span>: Explain the modules and what they require and the idea.</p>
 <ul>
 <li>search_api_search_node</li>
-<li>search_node_page</li>
-<li>search_node_test_settings</li>
+<li><p>search_node_page</p></li>
+<li><p>search_node_test_settings</p></li>
 </ul>
+<h2 id="installation-1"><span class="header-section-number">4.1</span> Installation</h2>
 <p>AngularJS in libraries folder (angular/angular.min.js) -&gt; 1.4.x</p>
-<h2 id="panels-vs.blocks"><span class="header-section-number">4.1</span> Panels vs. blocks</h2>
-<h2 id="configuration-2"><span class="header-section-number">4.2</span> Configuration</h2>
-<h2 id="override-search-controller"><span class="header-section-number">4.3</span> Override search controller</h2>
+<p><span class="citation">@TODO</span>: Who to install the modules.</p>
+<h2 id="panels-vs.blocks"><span class="header-section-number">4.2</span> Panels vs. blocks</h2>
+<p><span class="citation">@TODO</span>: How to use the panes or blocks provide by the modules.</p>
+<h2 id="configuration-2"><span class="header-section-number">4.3</span> Configuration</h2>
+<p><span class="citation">@TODO</span>: How to configure search API to use search node. <span class="citation">@TODO</span>: How to configure the blocks/panes</p>
+<h2 id="override-search-controller"><span class="header-section-number">4.4</span> Override search controller</h2>
+<p><span class="citation">@TODO</span>: How to overrride the contoller (in drupal) and link to ulf as an example.</p>
 <p>search-node-page-search-box.tpl.php</p>
 <div class="sourceCode"><pre class="sourceCode html"><code class="sourceCode html"><span class="kw">&lt;div</span><span class="ot"> id=</span><span class="st">&quot;searchBoxApp&quot;</span><span class="ot"> data-ng-strict-di data-ng-controller=</span><span class="st">&quot;UlfBoxController&quot;</span><span class="kw">&gt;</span>
   <span class="kw">&lt;span</span><span class="ot"> data-ng-include=</span><span class="st">&quot;template&quot;</span><span class="kw">&gt;</span>

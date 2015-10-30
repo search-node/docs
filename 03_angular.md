@@ -107,7 +107,7 @@ angular.module('searchAppConfig', [])
 @TODO: Above is missing date examples for the search provider.
 
 ### Loading the applications.
-It's important to load the different parts
+It's important to load the different parts in the right order as shown in the example below.
 
 ```html
 <!-- Load angular  -->
@@ -121,7 +121,9 @@ It's important to load the different parts
 <script src="search.min.js"></script>
 ```
 
-### Application targets
+### Bootstrap process and override
+
+@TODO: Explain how the to applications are bootstrapped and how to override the controllers.
 
 ```html
 <div id="searchBoxApp" data-ng-strict-di data-ng-controller="boxController">
@@ -141,13 +143,20 @@ It's important to load the different parts
 
 ## Development (search prototype)
 
+@TODO: Why the searchpt project and how to contribute to the solution.
+
 ### Cache + md5
 
+@TODO: What is cached and how is the cache controlled.
 
 ### Build process
+
+@TODO: How to build a new version of the minified files.
 
 ```bash
 gulp build --production
 ```
 
 ### Vagrant
+
+@TODO: The vagrant used to do the development and what it sets up.
